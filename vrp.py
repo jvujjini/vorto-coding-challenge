@@ -1,9 +1,10 @@
 import ast
 import math
 import sys
+import heapq
 from collections import defaultdict
 
-class Route:
+class Point:
     def __init__(self, line):
         id, pickup, dropoff = line.split(' ')
         self.id = int(id)
@@ -13,39 +14,50 @@ class Route:
 class VRP:
 
     def __init__(self, filename: str):
-        self.lines = []
-        with open(filename) as file:
-            self.lines = [line.rstrip() for line in file]
-        self.lines = self.lines[1:]
+        content = open(filename).readlines()[1:]
+        self.points = {}
+        for line in content:
+            point = Point(line.rstrip())
+            self.points[point.id] = point
     
     def euclidean_distance(self, start, end):
         return math.sqrt((start[0] - end[0])**2 + (start[1] - end[1])**2)
     
-    def time_to_route(self, start, route: Route):
+    def time_to_route(self, start, route: Point):
         route_time = self.euclidean_distance(start, route.pickup)
         return route_time + self.euclidean_distance(route.pickup, route.dropoff)
+    
+    def next_nearest_point(self, curr_location):
+        min_heap = []
+        for id in self.points.keys():
+            min_heap.append((self.euclidean_distance(curr_location, self.points[id].pickup), id))
+        heapq.heapify(min_heap)
+        return heapq.heappop(min_heap)[1]
 
     def vehicle_routing_problem(self):
-        origin = Route('0 (0.0,0.0) (0.0,0.0)')
+        origin = Point('0 (0.0,0.0) (0.0,0.0)')
         prev_route = origin
         driver = 0
         drivers = defaultdict(list)
         curr_time = 0.0
 
-        for line in self.lines:
-            route = Route(line)  
+        while len(self.points.keys()) > 0:
+            next_point = self.next_nearest_point(prev_route.dropoff)
+            dest = self.points[next_point]
 
-            curr_time += self.time_to_route(prev_route.dropoff, route)
-            dest_time = self.euclidean_distance(route.dropoff, origin.pickup)
-            
+            curr_time += self.time_to_route(prev_route.dropoff, dest)
+            dest_time = self.euclidean_distance(dest.dropoff, origin.pickup)
+
             if curr_time + dest_time > 720.0:
                 #print('***Trigger Hit***')
                 #print('total time for trigger: ' + str(curr_time+dest_time))
                 driver += 1
-                curr_time = self.time_to_route(origin.dropoff, route)
+                prev_route = origin
+                curr_time = self.time_to_route(origin.dropoff, dest)
             
-            prev_route = route            
-            drivers[driver].append(route.id)
+            prev_route = dest 
+            drivers[driver].append(dest.id)
+            del self.points[next_point]
 
             #print('Curr Route for driver ' + str(driver) + ': ' + str(drivers[driver]))
             #print('Curr Runtime: ' + str(curr_time))
