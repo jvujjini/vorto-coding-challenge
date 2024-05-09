@@ -19,7 +19,7 @@ class VRP:
         self.lines = self.lines[1:]
     
     def euclidean_distance(self, start, end):
-        return math.sqrt((start[1] - start[0])**2 + (end[1] - end[0])**2)
+        return math.sqrt((start[0] - end[0])**2 + (start[1] - end[1])**2)
     
     def time_to_route(self, start, route: Route):
         route_time = self.euclidean_distance(start, route.pickup)
@@ -42,10 +42,7 @@ class VRP:
                 #print('***Trigger Hit***')
                 #print('total time for trigger: ' + str(curr_time+dest_time))
                 driver += 1
-                node = drivers[driver-1].pop()
-                drivers[driver].append(node)
-                curr_time = self.time_to_route(origin.dropoff, prev_route)
-                curr_time += self.time_to_route(prev_route.dropoff, route)
+                curr_time = self.time_to_route(origin.dropoff, route)
             
             prev_route = route            
             drivers[driver].append(route.id)
