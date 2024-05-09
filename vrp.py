@@ -53,11 +53,11 @@ class VRP:
                 #print('total time for trigger: ' + str(curr_time+dest_time))
                 driver += 1
                 prev_route = origin
-                curr_time = self.time_to_route(origin.dropoff, dest)
-            
-            prev_route = dest 
-            drivers[driver].append(dest.id)
-            del self.points[next_point]
+                curr_time = 0.0
+            else:
+                prev_route = dest 
+                del self.points[next_point]
+                drivers[driver].append(dest.id)
 
             #print('Curr Route for driver ' + str(driver) + ': ' + str(drivers[driver]))
             #print('Curr Runtime: ' + str(curr_time))
