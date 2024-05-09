@@ -4,6 +4,8 @@ To run the program:
 python3/python vrp.py [input_data_path]
 ```
 
+or the program would also run according to the convention mentioned in the evalution readme
+
 Notes:
 
 This is a fairly straight forward code trying to prioritize for the drive times of the drivers. And a basic version of cost optimization by picking the next load to be the neareast point to the curr location.
