@@ -34,7 +34,7 @@ class VRP:
         heapq.heapify(min_heap)
         return heapq.heappop(min_heap)[1]
 
-    def vehicle_routing_problem(self):
+    def routes(self):
         origin = Point('0 (0.0,0.0) (0.0,0.0)')
         prev_route = origin
         driver = 0
@@ -69,4 +69,4 @@ class VRP:
 if __name__ == '__main__':
     filename = sys.argv[1]    
     vrp = VRP(filename)
-    vrp.vehicle_routing_problem()
+    vrp.routes()
